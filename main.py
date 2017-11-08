@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 
 def crnn(tensor, kernel_size, stride, out_channels, rnn_n_layers, rnn_type, bidirectional, w_std, padding, scope_name):
@@ -80,16 +81,12 @@ ii = tf.constant([[1, 0, 2, 3, 0, 1, 1],[1, 0, 2, 3, 0, 1, 1]], dtype=tf.float32
 
 label = 1 # for classification
 
-k2 = tf.constant([[2, 1, 3], [2, 1, 3]], dtype=tf.float32, name='k')
-
 data = tf.reshape(ii, [1, int(ii.shape[1]), 2], name='data')
 
-kernel = tf.reshape(k2, [1, int(k2.shape[0]), 3], name='kernel')
-
 # res2 = crnn(data, 4, 1, 10, 1, 'simple', True, 0.1, 'SAME', 'test_crnn')
-res2 = crnn(data, 4, 1, 10, 1, 'simple', False, 0.1, 'VALID', 'test_crnn') # output dimension, 4x10
-
-res = tf.squeeze(tf.nn.conv1d(data, kernel, 1, 'VALID'))
+res2 = crnn(data, 4, 1, 10, 1, 'simple', False, 0.1, 'VALID', 'test_crnn')
+# output dimension is 4x10, next we build the rnn model
+# with num_steps = 4, batch_size =1, every time, we input the same example, train with only one example
 
 num_steps = 4
 batch_size = 1
@@ -100,15 +97,17 @@ learning_rate = 0.1
 init_state = tf.zeros([batch_size, state_size])
 
 cell = tf.contrib.rnn.BasicRNNCell(state_size)
-rnn_outputs, final_state = tf.contrib.rnn.static_rnn(cell, [res2], initial_state=init_state) 
-# How to input the output of the crnn into the next rnn model, to do classification, the label of our only one example is "1" 
-# or we can generate many similar examples like this
 
+# this place has some problem
+rnn_outputs, final_state = tf.contrib.rnn.static_rnn(cell, [res2], initial_state=init_state)
+# How to input the output of the crnn into the next rnn model
+
+# or we can generate 100 train examples with following code
+trainX = np.random.random((100, 2, 7))
+trainY = np.random.randint(2, size=(100, 1))
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    print(sess.run(res))
     print(sess.run(res2))
     print(rnn_outputs)
-
 
