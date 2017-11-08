@@ -83,7 +83,7 @@ data = tf.reshape(ii, [1, int(ii.shape[1]), 2], name='data')
 
 kernel = tf.reshape(k2, [1, int(k2.shape[0]), 3], name='kernel')
 
-res2 = crnn(data, 4, 1, 10, 1, 'simple', True, 0, 'SAME', 'test_crnn')
+res2 = crnn(data, 4, 1, 10, 1, 'simple', True, 0.1, 'SAME', 'test_crnn')
 
 res = tf.squeeze(tf.nn.conv1d(data, kernel, 1, 'VALID'))
 
