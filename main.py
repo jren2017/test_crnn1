@@ -101,7 +101,8 @@ init_state = tf.zeros([batch_size, state_size])
 
 cell = tf.contrib.rnn.BasicRNNCell(state_size)
 rnn_outputs, final_state = tf.contrib.rnn.static_rnn(cell, [res2], initial_state=init_state) 
-# How to input the output of the crnn into the next rnn model, to do classification, the label of our only one example is "1"
+# How to input the output of the crnn into the next rnn model, to do classification, the label of our only one example is "1" 
+# or we can generate many similar examples like this
 
 
 with tf.Session() as sess:
