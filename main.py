@@ -99,8 +99,17 @@ init_state = tf.zeros([batch_size, state_size])
 cell = tf.contrib.rnn.BasicRNNCell(state_size)
 
 # this place has some problem
-rnn_outputs, final_state = tf.contrib.rnn.static_rnn(cell, [res2], initial_state=init_state)
+rnn_outputs, final_state = tf.contrib.rnn.static_rnn(cell, res2, initial_state=init_state)
+
 # How to input the output of the crnn into the next rnn model
+#logits and predictions
+with tf.variable_scope('softmax'):
+    W = tf.get_variable('W', [state_size, num_classes])
+    b = tf.get_variable('b', [num_classes], initializer=tf.constant_initializer(0.0))
+logits = [tf.matmul(rnn_output, W) + b for rnn_output in rnn_outputs]
+
+predictions = [tf.nn.softmax(logit) for logit in logits]
+
 
 # or we can generate 100 train examples with following code
 trainX = np.random.random((100, 2, 7))
@@ -110,4 +119,5 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     print(sess.run(res2))
     print(rnn_outputs)
+    print(predictions)
 
