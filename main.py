@@ -88,6 +88,7 @@ res2 = crnn(data, 4, 1, 10, 1, 'simple', True, 0, 'SAME', 'test_crnn')
 res = tf.squeeze(tf.nn.conv1d(data, kernel, 1, 'VALID'))
 
 with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
     print(sess.run(res))
     print(sess.run(res2))
 
